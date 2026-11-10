@@ -1,4 +1,5 @@
-name: Build LTA CHORDS Mac
+
+name: Build LTA CHORDS (macOS AU + VST3)
 
 on:
   workflow_dispatch:
@@ -8,25 +9,44 @@ on:
 jobs:
   build:
     runs-on: macos-15-intel
+    timeout-minutes: 50
 
     steps:
-      - name: Checkout source
+      - name: Check out project
         uses: actions/checkout@v4
 
-      - name: Configure
+      - name: Configure universal Mac build
         run: |
-          cmake -S . -B build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+          cmake -S . -B build -G Xcode \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DLTA_BUILD_TESTS=ON
 
-      - name: Build
+      - name: Build AU, VST3, and tests
         run: cmake --build build --config Release --parallel 3
 
-      - name: Upload plugins
+      - name: Run chord engine tests
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Package Mac plugins
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/VST3 dist/AU
+
+          ditto "build/LTA_CHORDS_artefacts/Release/VST3/LTA CHORDS.vst3" "dist/VST3/LTA CHORDS.vst3"
+
+          ditto "build/LTA_CHORDS_artefacts/Release/AU/LTA CHORDS.component" "dist/AU/LTA CHORDS.component"
+
+          codesign --force --deep --sign - "dist/VST3/LTA CHORDS.vst3"
+
+          codesign --force --deep --sign - "dist/AU/LTA CHORDS.component"
+
+          cp INSTALL_MACOS.txt dist/
+
+      - name: Upload Mac plugins
         uses: actions/upload-artifact@v4
         with:
-          name: LTA-CHORDS-Mac
-          path: |
-            build/**/*_artefacts/Release/VST3/**
-            build/**/*_artefacts/Release/AU/**
+          name: LTA-CHORDS-macOS-Universal-VST3-AU
+          path: dist/
           if-no-files-found: error
