@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 #include "PluginEditor.h"
+#include <algorithm>
 #include <cmath>
 
 namespace {
@@ -140,7 +141,7 @@ public:
             owner.showStatus("Chord " + juce::String(bar + 1) + " regenerated");
             owner.refresh(); return;
         }
-        selectedNote = hitTest(e.position);
+        selectedNote = findNoteAt(e.position);
         if (selectedNote >= 0 && e.mods.isRightButtonDown()) {
             const int index = selectedNote;
             owner.processor.modify([index](lta::ChordEngine& en) { en.deleteNote(index); });
@@ -180,7 +181,7 @@ public:
         repaint();
     }
     void mouseDoubleClick(const juce::MouseEvent& e) override {
-        const int index = hitTest(e.position);
+        const int index = findNoteAt(e.position);
         if (index >= 0) {
             owner.processor.modify([index](lta::ChordEngine& en) { en.deleteNote(index); });
             selectedNote = -1;
@@ -208,7 +209,8 @@ private:
     int pitchAt(int y) const { return juce::jlimit(lowPitch, highPitch,
         highPitch - static_cast<int>((y - chordTop) / rowHeight())); }
     double beatAt(int x) const { return std::max(0.0, std::floor((x - rollLeft) / 16.0) * 0.5); }
-    int hitTest(juce::Point<float> pt) const {
+    // Avoid hiding juce::Component::hitTest(int, int).
+    int findNoteAt(juce::Point<float> pt) const {
         const auto m = owner.processor.model();
         for (int i = (int)m.notes.size() - 1; i >= 0; --i)
             if (rectangleFor(m.notes[static_cast<size_t>(i)]).contains(pt)) return i;
@@ -305,7 +307,7 @@ LtaChordsEditor::LtaChordsEditor(LtaChordsProcessor& p)
     saveBtn.onClick = [this] { choosePreset(true); };
     loadBtn.onClick = [this] { choosePreset(false); };
     exportBtn.onClick = [this] { chooseExport(); };
-    viewport.setScrollBarsShown(false, true);
+    viewport.setScrollBarsShown(true, true);
     viewport.setViewedComponent(piano.get(), false);
     addAndMakeVisible(viewport);
     addAndMakeVisible(*dragArea);
@@ -362,27 +364,39 @@ void LtaChordsEditor::resized() {
     status.setBounds(w - 330, 34, 302, 25);
     const int top = 104;
     const int widths[] = {105, 112, 112, 177, 160, 160};
-    juice::ComboBox* combos[] = {&keySelect, &modeSelect, &barSelect, &styleSelect, &complexitySelect, &voicingSelect};
+    juce::ComboBox* combos[] = {&keySelect, &modeSelect, &barSelect, &styleSelect, &complexitySelect, &voicingSelect};
     int x = 24;
-    const juce::StringArray headings{"KEY", "SCALE", "LENGTH", "STYLE", "RICHNESS", "VOICING"};
+    constexpr int comboGap = 8;
+    const int normalWidth = 105 + 112 + 112 + 177 + 160 + 160;
+    const float scale = std::min(1.0f, static_cast<float>(w - 48 - 5 * comboGap) / normalWidth);
     for (int i = 0; i < 6; ++i) {
-        auto labelBounds = juce::Rectangle<int>(x, top - 18, widths[i], 16);
+        const int comboWidth = static_cast<int>(widths[i] * scale);
+        auto labelBounds = juce::Rectangle<int>(x, top - 18, comboWidth, 16);
         // Draw the headings in paintOverChildren to avoid allocating controls.
         comboLabelBounds[i] = labelBounds;
-        combos[i]->setBounds(x, top, widths[i], 34);
-        x += widths[i] + 10;
+        combos[i]->setBounds(x, top, comboWidth, 34);
+        x += comboWidth + comboGap;
     }
     const int btnY = 154, h = 36, gap = 8;
     x = 24;
     auto place = [&](juce::TextButton& b, int size) { b.setBounds(x, btnY, size, h); x += size + gap; };
     place(generate, 144); place(reroll, 125); place(inversion, 85); place(shuffle, 93);
     place(transposeDown, 100); place(transposeUp, 100);
-    place(undoBtn, 64); place(redoBtn, 64); place(previewBtn, 136);
-    tips.setBounds(24, 211, w - 45, 25);
+    const bool compact = w < 1024;
+    if (compact) {
+        undoBtn.setBounds(24, 197, 82, h);
+        redoBtn.setBounds(114, 197, 82, h);
+        previewBtn.setBounds(204, 197, 150, h);
+    } else {
+        place(undoBtn, 64); place(redoBtn, 64); place(previewBtn, 136);
+    }
+    tips.setBounds(24, compact ? 239 : 211, w - 45, 25);
     const int bottom = getHeight() - 77;
-    viewport.setBounds(24, 245, w - 48, bottom - 245);
+    const int rollTop = compact ? 270 : 245;
+    viewport.setBounds(24, rollTop, w - 48, bottom - rollTop);
     const int bars = processor.model().settings.bars;
-    piano->setSize(std::max(w - 48, rollLeft + bars * barWidth + 6), viewport.getHeight() - 10);
+    piano->setSize(std::max(w - 48, rollLeft + bars * barWidth + 6),
+                   std::max(480, viewport.getHeight() - 10));
     int bottomX = 24;
     dragArea->setBounds(bottomX, bottom + 15, 298, 45);
     bottomX += 310;

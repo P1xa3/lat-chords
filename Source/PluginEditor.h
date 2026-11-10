@@ -2,6 +2,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include <array>
 #include <memory>
 
 class LtaChordsEditor final : public juce::AudioProcessorEditor,

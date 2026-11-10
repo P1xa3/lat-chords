@@ -2,6 +2,21 @@
 
 Original open-source chord progression generator and playable **VST3 instrument for Windows and macOS**, plus **AU for macOS** (FL Studio, Logic Pro and other compatible hosts). Similar *workflow* to one-click chord tools, with independent code, algorithms and interface. Not affiliated with Unison Audio or Chord Genie; no proprietary code, samples, or AI model copied.
 
+## Complete replacement package (November 2026)
+
+This archive contains the **full files**, not snippets. Copy everything inside the extracted project folder to the **root** of your GitHub repository, replacing the existing files. In particular, keep the `Source`, `tests`, and hidden `.github/workflows` directory structures intact.
+
+Fixes in this edition:
+
+- Corrected `juce::ComboBox` compilation error in `PluginEditor.cpp`.
+- Renamed a private piano-roll helper to avoid hiding JUCE's `Component::hitTest` method.
+- Made the interface layout fit both the default size and the supported narrower window sizes.
+- Kept the chosen chord richness consistent in all styles (triads are now actually triads).
+- Added missing self-contained C++ chord engine tests and their include path.
+- Supplied complete macOS and Windows GitHub Actions builds with artifact upload.
+
+**Verification:** The chord engine compiles under GCC 17-standard mode and passes tests locally. Building and loading the full JUCE AU/VST3 still require a macOS/Windows runner and DAW testing; this package is not represented as precompiled or fully host-verified.
+
 ## Included features
 
 - 12 keys × major / natural minor; 4, 8 or 16 bars.
@@ -18,10 +33,10 @@ Original open-source chord progression generator and playable **VST3 instrument 
 
 ## Build online - no Visual Studio or Xcode installation required
 
-1. Sign in to GitHub and create a **new empty repository**, for example `lta-chords`.
-2. Unzip this source package. Upload **all files and folders from inside the extracted `LTA_CHORDS_GitHub` folder** at the repository root, including the hidden `.github` folder. Avoid uploading the outer folder as a nested directory.
-3. Commit the files to the `main` branch.
-4. Open **Actions** in the repo. If prompted, enable workflows. Run **Build LTA CHORDS VST3 (Windows)** for Windows or **Build LTA CHORDS (macOS Universal VST3 + AU)** for Mac. A push to `main` also triggers both.
+1. Open the existing GitHub repository (`P1xa3/lat-chords`) or create a new repository.
+2. Unzip this source package. Upload **all files and folders from inside the extracted project folder** at the repository root, including the hidden `.github` folder. On a Mac, Finder's Command-Shift-Period toggles hidden files. If uploading via the web editor, ensure `.github/workflows/build-macos.yml` actually appears under the repository's Code tab.
+3. Replace the old source/configuration files and commit the changes to the `main` branch.
+4. Open **Actions** in the repo. If prompted, enable workflows. Run **Build LTA CHORDS (Windows VST3)** or **Build LTA CHORDS (macOS AU + VST3)**. A push to `main` will trigger both workflows automatically.
 5. Once the chosen run has a green tick, open it and scroll to **Artifacts**. Download **LTA-CHORDS-Windows-VST3** for Windows or **LTA-CHORDS-macOS-Universal-VST3-AU** for Mac.
 6. Extract its ZIP and follow `INSTALL_WINDOWS.txt` or `INSTALL_MACOS.txt`. The macOS artifact includes universal Intel + Apple Silicon VST3 and AU bundles.
 

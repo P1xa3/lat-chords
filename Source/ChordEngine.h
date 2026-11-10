@@ -160,7 +160,7 @@ private:
         };
         std::vector<int> v{scalePitch(0), scalePitch(2), scalePitch(4)};
         int complexity = std::clamp(settings.complexity, 0, 2);
-        if (settings.style == 2 || settings.style == 4) complexity = std::max(complexity, 1);
+        // The selected richness must be honoured for every style.
         if (complexity >= 1) v.push_back(scalePitch(6));
         if (complexity >= 2 && settings.style != 5) v.push_back(scalePitch(8));
         // Keep a predictable usable keyboard register for a DAW piano roll.
