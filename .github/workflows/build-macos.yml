@@ -1,0 +1,32 @@
+name: Build LTA CHORDS Mac
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+
+      - name: Build
+        run: cmake --build build --config Release --parallel 3
+
+      - name: Upload plugins
+        uses: actions/upload-artifact@v4
+        with:
+          name: LTA-CHORDS-Mac
+          path: |
+            build/**/*_artefacts/Release/VST3/**
+            build/**/*_artefacts/Release/AU/**
+          if-no-files-found: error
