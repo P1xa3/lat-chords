@@ -238,10 +238,10 @@ bool LtaChordsProcessor::deserialize(const juce::XmlElement& xml, lta::ChordEngi
 void LtaChordsProcessor::getStateInformation(juce::MemoryBlock& destination) {
     juce::XmlElement xml("LTA_CHORDS");
     serialize(model(), xml);
-    juce::copyXmlToBinary(xml, destination);
+    juce::AudioProcessor::copyXmlToBinary(xml, destination);
 }
 void LtaChordsProcessor::setStateInformation(const void* data, int bytes) {
-    const auto xml = juce::getXmlFromBinary(data, bytes);
+    const auto xml = juce::AudioProcessor::getXmlFromBinary(data, bytes);
     if (!xml) return;
     const juce::ScopedLock lock(modelMutex);
     if (deserialize(*xml, engine)) {
@@ -258,7 +258,7 @@ bool LtaChordsProcessor::savePreset(const juce::File& destination) {
 bool LtaChordsProcessor::loadPreset(const juce::File& source) {
     juce::MemoryBlock state;
     if (!source.loadFileAsData(state)) return false;
-    auto xml = juce::getXmlFromBinary(state.getData(), static_cast<int>(state.getSize()));
+    auto xml = juce::AudioProcessor::getXmlFromBinary(state.getData(), static_cast<int>(state.getSize()));
     if (!xml || !xml->hasTagName("LTA_CHORDS")) return false;
     setStateInformation(state.getData(), static_cast<int>(state.getSize()));
     return true;
