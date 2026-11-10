@@ -362,7 +362,7 @@ void LtaChordsEditor::resized() {
     status.setBounds(w - 330, 34, 302, 25);
     const int top = 104;
     const int widths[] = {105, 112, 112, 177, 160, 160};
-    auto* combos[] = {&keySelect, &modeSelect, &barSelect, &styleSelect, &complexitySelect, &voicingSelect};
+    juice::ComboBox* combos[] = {&keySelect, &modeSelect, &barSelect, &styleSelect, &complexitySelect, &voicingSelect};
     int x = 24;
     const juce::StringArray headings{"KEY", "SCALE", "LENGTH", "STYLE", "RICHNESS", "VOICING"};
     for (int i = 0; i < 6; ++i) {
