@@ -1,0 +1,15 @@
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+LTA CHORDS source code is provided under the GNU Affero General Public License,
+Version 3 or (at your option) any later version.
+
+Copyright (c) 2026 LTA / LISTENTOAARXN
+
+The program is provided without warranty of any kind.
+
+The full, authoritative licence text is available at:
+https://www.gnu.org/licenses/agpl-3.0.txt
+
+Each source file includes an SPDX licence identifier. JUCE framework is not
+included in this source package; its licence information is available at
+https://juce.com/legal/juce-8-licence/

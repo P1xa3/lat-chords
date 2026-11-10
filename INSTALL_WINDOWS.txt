@@ -1,0 +1,21 @@
+LTA // CHORDS - INSTALLATION (WINDOWS 10/11 + FL STUDIO)
+======================================================
+1. Extract the downloaded GitHub Actions artifact ZIP. Do not leave it zipped.
+2. Find the FOLDER named "LTA CHORDS.vst3" (it contains Contents/x86_64-win/...).
+3. Copy the ENTIRE .vst3 folder into:
+       C:\Program Files\Common Files\VST3\
+   You may be asked for Administrator permission.
+4. Open FL Studio: Options > Manage plugins > Find installed plugins.
+5. Add "LTA CHORDS" to the Channel Rack as an INSTRUMENT.
+6. Choose key, scale, bars, style and richness; press GENERATE NEW.
+7. Use PLAY PREVIEW for an audible synthesised preview. The plugin also follows
+   FL Studio transport playback when the host provides a PPQ position.
+8. Use EXPORT MIDI, then drag the saved .mid file into your chosen instrument's
+   piano roll. Alternatively, try dragging directly from DRAG MIDI TO FL STUDIO.
+
+NOTE: It has its own basic electric-key style synth; it is not a sampled piano.
+NOTE: VST3 MIDI output routing is DAW dependent. Exporting the MIDI and
+      dragging it to another instrument's piano roll is the reliable FL path.
+NOTE: This is an independently implemented plugin, not Unison Chord Genie.
+NOTE: A GitHub Actions artifact is a ZIP containing the compiled VST3, not an
+      executable installer. Do not double-click .vst3 to install it.

@@ -1,0 +1,34 @@
+LTA // CHORDS - MACOS INSTALLATION (INTEL + APPLE SILICON)
+=========================================================
+The macOS build includes two separate native plugin formats: VST3 and AU.
+Both target Intel (x86_64) and Apple Silicon (arm64) on macOS 11 or later.
+
+1. Download the completed GitHub Actions artifact named:
+   LTA-CHORDS-macOS-Universal-VST3-AU
+2. Unzip the downloaded ZIP. You should have two directories: VST3 and AU.
+3. Quit your DAW before installing.
+4. For FL Studio or other VST3-compatible hosts, copy the WHOLE
+   "LTA CHORDS.vst3" bundle from VST3/ into:
+       ~/Library/Audio/Plug-Ins/VST3/
+   Create the directory if it does not exist.
+5. For Logic Pro, or any AU-compatible host, copy the WHOLE
+   "LTA CHORDS.component" bundle from AU/ into:
+       ~/Library/Audio/Plug-Ins/Components/
+   Create the directory if it does not exist.
+6. Open the DAW and perform a full plugin rescan. In FL Studio, use
+   Options > Manage plugins > Find installed plugins.
+7. Add LTA CHORDS as an instrument. Export .mid files into your target
+   instrument's piano roll if live MIDI routing is unavailable.
+
+SAFETY / CODESIGN NOTES
+- This is a development build, ad-hoc signed in GitHub Actions; it is NOT
+  Apple-notarized or Developer ID signed.
+- macOS Gatekeeper may block plug-ins downloaded from the internet. Only if
+  you built this source yourself and trust the artifact, you can clear the
+  quarantine attribute from the downloaded plugin bundle, e.g.:
+      xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/"LTA CHORDS.vst3"
+  or for AU:
+      xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/Components/"LTA CHORDS.component"
+  Avoid running this on plugins from an untrusted source.
+- A GitHub Actions artifact is a ZIP, not an installer.
+- The exact host behaviour has not yet been verified in FL Studio or Logic.
